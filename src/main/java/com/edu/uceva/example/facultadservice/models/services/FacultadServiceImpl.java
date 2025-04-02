@@ -20,7 +20,7 @@ public class FacultadServiceImpl implements IFacultadService  {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Facultad id) {
         facultadRepository.deleteById(id);
     }
 
