@@ -2,6 +2,7 @@ package com.edu.uceva.example.facultadservice.controllers;
 
 import com.edu.uceva.example.facultadservice.models.entities.Facultad;
 import com.edu.uceva.example.facultadservice.models.services.IFacultadService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/facultad-service")
 public class FacultadRestController {
 
+    // Declaramos como final el servicio para mejorar la inmutabilidad
     private final IFacultadService facultadService;
 
     private static final String ERROR = "error";
@@ -25,14 +27,15 @@ public class FacultadRestController {
     private static final String FACULTAD = "facultad";
     private static final String FACULTADES = "facultades";
 
+
+    // Inyección de dependencia del servicio que proporciona servicios de CRUD
     public FacultadRestController(IFacultadService facultadService) {
         this.facultadService = facultadService;
     }
 
     /**
-     * Listar todas las facultades
+     * Listar todos las facultades.
      */
-
     @GetMapping("/facultades")
     public ResponseEntity<Map<String, Object>> getFacultades() {
         Map<String, Object> response = new HashMap<>();
@@ -42,7 +45,7 @@ public class FacultadRestController {
 
             if (facultades.isEmpty()) {
                 response.put(MENSAJE, "No hay facultades en la base de datos.");
-                response.put(FACULTADES, facultades); //para que sea siempre el mismo campo
+                response.put(FACULTADES, facultades); // para que sea siempre el mismo campo
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             }
 
@@ -50,14 +53,14 @@ public class FacultadRestController {
             return ResponseEntity.ok(response);
 
         } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al consultar la base de datos");
+            response.put(MENSAJE, "Error al consultar la base de datos.");
             response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    /**
-     * Listar facultades con paginación
+     /**
+     * Listar facultades con paginación.
      */
     @GetMapping("/facultad/page/{page}")
     public ResponseEntity<Object> index(@PathVariable Integer page) {
@@ -65,14 +68,14 @@ public class FacultadRestController {
         Pageable pageable = PageRequest.of(page, 4);
 
         try {
-            Page<Facultad> facultades = facultadService.findAll(pageable);
+            Page<Facultad> productos = facultadService.findAll(pageable);
 
-            if (facultades.isEmpty()) {
+            if (productos.isEmpty()) {
                 response.put(MENSAJE, "No hay facultades en la página solicitada.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            return ResponseEntity.ok(facultades);
+            return ResponseEntity.ok(productos);
 
         } catch (DataAccessException e) {
             response.put(MENSAJE, "Error al consultar la base de datos.");
@@ -83,11 +86,9 @@ public class FacultadRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-
     /**
-     * Crear un nuevo producto pasando el objeto en el cuerpo de la petición
+     * Crear una nueva facultad pasando el objeto en el cuerpo de la petición.
      */
-
     @PostMapping("/facultades")
     public ResponseEntity<Map<String, Object>> save(@RequestBody Facultad facultad) {
         Map<String, Object> response = new HashMap<>();
@@ -96,7 +97,7 @@ public class FacultadRestController {
             // Guardar la facultad en la base de datos
             Facultad nuevaFacultad = facultadService.save(facultad);
 
-            response.put(MENSAJE, "La facultad ha sido creada con éxito!");
+            response.put(MENSAJE, "La facultad ha sido creado con éxito!");
             response.put(FACULTAD, nuevaFacultad);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -106,7 +107,6 @@ public class FacultadRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
 
     /**
      * Eliminar una facultad pasando el objeto en el cuerpo de la petición.
@@ -133,8 +133,9 @@ public class FacultadRestController {
 
     /**
      * Actualizar una facultad pasando el objeto en el cuerpo de la petición.
+     * @param facultad: Objeto Facultad que se va a actualizar
      */
-    @PutMapping("/productos")
+    @PutMapping("/facultades")
     public ResponseEntity<Map<String, Object>> update(@RequestBody Facultad facultad) {
         Map<String, Object> response = new HashMap<>();
 
@@ -145,11 +146,11 @@ public class FacultadRestController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Guardar directamente el producto actualizado en la base de datos
-            Facultad facultadActualizado = facultadService.save(facultad);
+            // Guardar directamente la facultad actualizada en la base de datos
+            Facultad facultadActualizada = facultadService.save(facultad);
 
             response.put(MENSAJE, "La facultad ha sido actualizado con éxito!");
-            response.put(FACULTAD, facultadActualizado);
+            response.put(FACULTAD, facultadActualizada);
             return ResponseEntity.ok(response);
 
         } catch (DataAccessException e) {
@@ -160,7 +161,7 @@ public class FacultadRestController {
     }
 
     /**
-     * Obtener una facultad por su ID.
+     * Obtener un facultad por su ID.
      */
     @GetMapping("/facultades/{id}")
     public ResponseEntity<Map<String, Object>> findById(@PathVariable Long id) {
@@ -174,7 +175,7 @@ public class FacultadRestController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            response.put(MENSAJE, "La facultad ha sido actualizado con éxito!");
+            response.put(MENSAJE, "La facultad ha sido actualizada con éxito!");
             response.put(FACULTAD, facultad);
             return ResponseEntity.ok(response);
 
@@ -186,3 +187,5 @@ public class FacultadRestController {
     }
 
 }
+
+
