@@ -2,6 +2,7 @@ package com.edu.uceva.example.facultadservice.controllers;
 
 import com.edu.uceva.example.facultadservice.models.entities.Facultad;
 import com.edu.uceva.example.facultadservice.models.services.IFacultadService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -90,8 +92,18 @@ public class FacultadRestController {
      * Crear una nueva facultad pasando el objeto en el cuerpo de la petición.
      */
     @PostMapping("/facultades")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody Facultad facultad) {
+    public ResponseEntity<Map<String, Object>> save(@Valid @RequestBody Facultad facultad, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+                    .toList();
+
+            response.put("errors", errors);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
         try {
             // Guardar la facultad en la base de datos
@@ -102,11 +114,12 @@ public class FacultadRestController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al insertar la facultad en la base de datos.");
+            response.put(MENSAJE, "Error al insertar el producto en la base de datos.");
             response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     /**
      * Eliminar una facultad pasando el objeto en el cuerpo de la petición.
@@ -136,11 +149,21 @@ public class FacultadRestController {
      * @param facultad: Objeto Facultad que se va a actualizar
      */
     @PutMapping("/facultades")
-    public ResponseEntity<Map<String, Object>> update(@RequestBody Facultad facultad) {
+    public ResponseEntity<Map<String, Object>> update(@Valid @RequestBody Facultad facultad, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
 
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
+                    .toList();
+
+            response.put("errors", errors);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
         try {
-            // Verificar si el producto existe antes de actualizar
+            // Verificar si la facultad existe antes de actualizar
             if (facultadService.findById(facultad.getId()) == null) {
                 response.put(MENSAJE, "Error: No se pudo editar, la facultad ID: " + facultad.getId() + " no existe en la base de datos.");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -149,12 +172,12 @@ public class FacultadRestController {
             // Guardar directamente la facultad actualizada en la base de datos
             Facultad facultadActualizada = facultadService.save(facultad);
 
-            response.put(MENSAJE, "La facultad ha sido actualizado con éxito!");
+            response.put(MENSAJE, "El producto ha sido actualizado con éxito!");
             response.put(FACULTAD, facultadActualizada);
             return ResponseEntity.ok(response);
 
         } catch (DataAccessException e) {
-            response.put(MENSAJE, "Error al actualizar la facultad en la base de datos.");
+            response.put(MENSAJE, "Error al actualizar el producto en la base de datos.");
             response.put(ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
