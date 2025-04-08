@@ -41,7 +41,7 @@ public class FacultadRestController {
      * Listar todos las facultades.
      */
     @GetMapping("/facultades")
-    public ResponseEntity<Map<String, Object>> getProductos() {
+    public ResponseEntity<Map<String, Object>> getFacultades() {
         List<Facultad> facultades = facultadService.findAll();
         if (facultades.isEmpty()) {
             throw new NoHayFacultadesException();
@@ -57,11 +57,11 @@ public class FacultadRestController {
     @GetMapping("/facultad/page/{page}")
     public ResponseEntity<Object> index(@PathVariable Integer page) {
         Pageable pageable = PageRequest.of(page, 4);
-        Page<Facultad> productos = facultadService.findAll(pageable);
-        if (productos.isEmpty()) {
+        Page<Facultad> facultades = facultadService.findAll(pageable);
+        if (facultades.isEmpty()) {
             throw new PaginaSinFacultadesException(page);
         }
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(facultades);
     }
     /**
      * Crear una nueva facultad pasando el objeto en el cuerpo de la petición.
@@ -119,7 +119,7 @@ public class FacultadRestController {
         Facultad facultad = facultadService.findById(id)
                 .orElseThrow(() -> new FacultadNoEncontradaException(id));
         Map<String, Object> response = new HashMap<>();
-        response.put(MENSAJE, "El producto ha sido encontrado con éxito!");
+        response.put(MENSAJE, "La facultad ha sido encontrada con éxito!");
         response.put(FACULTAD, facultad);
         return ResponseEntity.ok(response);
     }
