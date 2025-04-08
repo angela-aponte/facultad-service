@@ -1,7 +1,7 @@
-package com.edu.uceva.example.facultadservice.models.services;
+package com.edu.uceva.example.facultadservice.domain.services;
 
-import com.edu.uceva.example.facultadservice.models.entities.Facultad;
-import com.edu.uceva.example.facultadservice.models.repositories.IFacultadRepository;
+import com.edu.uceva.example.facultadservice.domain.entities.Facultad;
+import com.edu.uceva.example.facultadservice.domain.repositories.IFacultadRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

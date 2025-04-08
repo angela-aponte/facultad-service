@@ -1,9 +1,8 @@
-package com.edu.uceva.example.facultadservice.controllers;
+package com.edu.uceva.example.facultadservice.delivery.rest;
 
-import com.edu.uceva.example.facultadservice.models.entities.Facultad;
-import com.edu.uceva.example.facultadservice.models.services.IFacultadService;
+import com.edu.uceva.example.facultadservice.domain.entities.Facultad;
+import com.edu.uceva.example.facultadservice.domain.services.IFacultadService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -1,10 +1,8 @@
-package com.edu.uceva.example.facultadservice.models.entities;
+package com.edu.uceva.example.facultadservice.domain.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Setter;
 
