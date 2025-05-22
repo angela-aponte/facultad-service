@@ -1,11 +1,12 @@
 package com.edu.uceva.example.facultadservice.delivery.rest;
 
 import com.edu.uceva.example.facultadservice.domain.entities.Facultad;
-import com.edu.uceva.example.facultadservice.domain.exception.FacultadNoEncontradaException;
-import com.edu.uceva.example.facultadservice.domain.exception.NoHayFacultadesException;
-import com.edu.uceva.example.facultadservice.domain.exception.PaginaSinFacultadesException;
-import com.edu.uceva.example.facultadservice.domain.exception.ValidationException;
+import com.edu.uceva.example.facultadservice.domain.entities.UsuarioDTO;
+import com.edu.uceva.example.facultadservice.domain.exception.*;
 import com.edu.uceva.example.facultadservice.domain.services.IFacultadService;
+import com.edu.uceva.example.facultadservice.domain.services.IUsuarioClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +28,18 @@ public class FacultadRestController {
 
     // Declaramos como final el servicio para mejorar la inmutabilidad
     private final IFacultadService facultadService;
+    private final IUsuarioClient usuarioClient;
 
     private static final String MENSAJE = "mensaje";
     private static final String FACULTAD = "facultad";
     private static final String FACULTADES = "facultades";
+    private static final String USUARIOS = "usuarios";
 
 
     // Inyección de dependencia del servicio que proporciona servicios de CRUD
-    public FacultadRestController(IFacultadService facultadService) {
+    public FacultadRestController(IFacultadService facultadService, IUsuarioClient usuarioClient) {
         this.facultadService = facultadService;
+        this.usuarioClient = usuarioClient;
     }
 
     /**
@@ -48,6 +53,26 @@ public class FacultadRestController {
         }
         Map<String, Object> response = new HashMap<>();
         response.put(FACULTADES, facultades);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/decanos")
+    public ResponseEntity<Map<String, Object>> getDocentes() {
+        ObjectMapper mapper = new ObjectMapper();
+        //https://stackoverflow.com/questions/28821715/java-lang-classcastexception-java-util-linkedhashmap-cannot-be-cast-to-com-test
+        List<UsuarioDTO> usuarios = mapper.convertValue(usuarioClient.getUsuarios().getBody().get(USUARIOS), new TypeReference<List<UsuarioDTO>>(){});
+        List<UsuarioDTO> decanos = new ArrayList<>();
+        Map<String, Object> response = new HashMap<>();
+
+        for(UsuarioDTO usuario : usuarios) {
+            if(usuario.getRol().equals("Decano")) {
+                decanos.add(usuario);
+            }
+        }
+        if (decanos.isEmpty()) {
+            throw new NoHayDecanosException();
+        }
+        response.put(USUARIOS, decanos);
         return ResponseEntity.ok(response);
     }
 

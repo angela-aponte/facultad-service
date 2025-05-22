@@ -1,3 +1,5 @@
+usuarioservice:
+    url: ${TARGET_HOST_1:http://localhost:8082}
 app:
     api:
         version: v1
@@ -33,7 +35,7 @@ management:
     server:
         port: 8081
 server:
-    port: 8080
+    port: ${PORT:8080}
 spring:
     application:
         name: Facultad-Service
@@ -48,12 +50,12 @@ spring:
             maximum-pool-size: 50
             minimum-idle: 10
             validation-timeout: 5000
-        password: a1b2c3d4
-        url: jdbc:postgresql://localhost:5432/curso_springboot
-        username: devdb
+        password: ${DB_PASS:a1b2c3d4}
+        url: ${DB_HOST:jdbc:postgresql://localhost:5432/curso_springboot}
+        username: ${DB_USER:devdb}
     jpa:
         hibernate:
-            ddl-auto: create-drop
+            ddl-auto: ${JPA_DDL:create-drop}
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
